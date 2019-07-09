@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>search</title>
+  </head>
+  <body>
+    <input type="text" name="search_text" class="search_text" />
+    <button class="search_btn">찾기</button>
+    <div>
+      <img id="image" src="" alt="" />
+    </div>
+    <div id="text"></div>
+
+    <script>
+      const searchEl = document.querySelector('.search_text')
+      const searchBtnEl = document.querySelector('.search_btn')
+      searchBtnEl.addEventListener('click', () => {
+        const search_txt = searchEl.value
+        const xhttp = new XMLHttpRequest()
+        xhttp.open('POST', 'http://127.0.0.1:3000/search', true)
+        xhttp.setRequestHeader('Content-Type', 'application/json')
+        let data = {
+          text: search_txt
+        }
+        data = JSON.stringify(data)
+        xhttp.send(data)
+
+        xhttp.addEventListener('load', function() {
+          const result = JSON.parse(xhttp.responseText)
+          if (result.result === 'ok') {
+            document.getElementById('image').src = result.imageUrl
+            document.getElementById('text').innerHTML = result.text
+          } else {
+            document.getElementById('text').innerHTML = '검색 결과가 없습니다.'
+          }
+        })
+      })
+    </script>
+  </body>
+</html>

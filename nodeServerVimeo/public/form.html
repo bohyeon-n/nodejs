@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>email form</title>
+  </head>
+  <body>
+    <form action="/email/form" method="post">
+      email: <input type="text" name="email" class="email_input" /> <br />
+      <input type="submit" />
+    </form>
+    <button class="ajaxsend">ajaxsend</button>
+    <div class="result"></div>
+    <script>
+      const ajaxSendEl = document.querySelector('.ajaxsend')
+      ajaxSendEl.addEventListener('click', function() {
+        const inputData = document.querySelector('.email_input').value
+        sendAjax('http://127.0.0.1:3000/email/ajax', inputData)
+      })
+      function sendAjax(url, data) {
+        var data = { email: data }
+        data = JSON.stringify(data)
+        const xhr = new XMLHttpRequest()
+        xhr.open('POST', url)
+        xhr.setRequestHeader('Content-Type', 'application/json')
+        xhr.send(data)
+        xhr.addEventListener('load', function() {
+          const result = JSON.parse(xhr.responseText)
+          const resultDiv = document.querySelector('.result')
+          if (result.result !== 'ok')
+            resultDiv.innerHTML = 'your email is not found'
+          else resultDiv.innerHTML = `HELLO! ${result.name}`
+        })
+      }
+    </script>
+  </body>
+</html>
+
+<!-- 클라이언트의 폼을 제이슨 형식으로 만들어서 send에 담아서 보냈고 서버에서는 app.post에서 받았기 때문에 url을 라우팅 해서 모니터링 하고 있다가 -->
+<!-- 결과 값을 포함해서 보내줌 -->
+<!-- 노드와 클라이언트간의 완전한 코드를 구현해봄 -->
