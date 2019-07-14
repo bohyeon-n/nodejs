@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>join!</title>
+  </head>
+  <body>
+    <h1>join my website!</h1>
+    <form action="/join" method="post">
+      <!-- 브라우저에서 get으로 /join에 접근한 것과는 다르게 
+      포스트로 접근하게 되는데 포스트로 접근할 때는 서버에서 다르게 처리를 할 수 있다.
+    메서드가 get이냐 post냐에 따라서 다른 결과를 보여줄 수 있다.  -->
+      email: <input type="text" name="email" /> <br />
+      name:
+      <input type="text" name="name" /> <br />
+      password:
+      <input type="password" name="password" /> <br />
+      <input type="submit" />
+    </form>
+  </body>
+</html>
