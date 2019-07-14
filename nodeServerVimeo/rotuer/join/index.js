@@ -25,15 +25,16 @@ router.post('/', function(req, res) {
   const email = body.email
   const name = body.name
   const password = body.password
-  const query = connection.query(
-    `insert into testtable (email, name, password) values('${email}', '${name}', '${password}')`,
-    function(err, rows) {
-      if (err) {
-        throw err
-      }
-      console.log('ok db insert')
+  const sql = { email, name, password }
+  const query = connection.query(`insert into testtable set ?`, sql, function(
+    err,
+    rows
+  ) {
+    if (err) {
+      throw err
     }
-  )
+    res.render('welcome.ejs', { name: name, id: rows.insertId })
+  })
 })
 
 module.exports = router
