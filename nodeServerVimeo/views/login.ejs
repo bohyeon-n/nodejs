@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>email form</title>
+  </head>
+  <body>
+    <form action="/email/form" method="post">
+      email: <input type="text" name="email"  /> <br />
+      password: <input  type="password" name="password"/>
+
+      <button class="ajaxsend">login</button>
+    </form>
+    <button class="ajaxsend">ajaxsend</button>
+    <div class="result"></div>
+    <script>
+      const ajaxSendEl = document.querySelector('.ajaxsend')
+      ajaxSendEl.addEventListener('click', function() {
+        const email = document.getElementsByName('email')[0].value
+        const password = document.getElementsByName('password')[0].value
+        sendAjax('http://127.0.0.1:3000/email/ajax', 
+          {email: email, password: password}})
+      })
+      function sendAjax(url, data) {
+        var data = { email: data }
+        data = JSON.stringify(data)
+        const xhr = new XMLHttpRequest()
+        xhr.open('POST', url)
+        xhr.setRequestHeader('Content-Type', 'application/json')
+        xhr.send(data)
+        xhr.addEventListener('load', function() {
+          const result = JSON.parse(xhr.responseText)
+          const resultDiv = document.querySelector('.result')
+          if (result.result !== 'ok')
+            resultDiv.innerHTML = 'your email is not found'
+          else resultDiv.innerHTML = `HELLO! ${result.name}`
+        })
+      }
+    </script>
+  </body>
+</html>
+
