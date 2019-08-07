@@ -5,8 +5,10 @@ var path = require('path')
 
 // 라우터 처리를 여기서 할 수 있도록
 router.get('/', function(req, res) {
-  console.log('main js loaded')
-  res.sendFile(path.join(__dirname, '../public/main.html'))
+  // res.sendFile(path.join(__dirname, '../../public/main.html'))
+  const id = req.user
+  console.log(req.user)
+  res.render('main.ejs', { id: id })
 })
 // 현재 경로에서 ../한 단계 위로 올라가서 public/main.html을 찾아ㄴ줘
 

@@ -3,7 +3,8 @@ var app = express()
 var router = express.Router()
 var path = require('path')
 var mysql = require('mysql')
-
+const passport = require('passport')
+const LocalStrategy = require('passport-local').Strategy
 // DATABASE SETTING
 var connection = mysql.createConnection({
   host: 'localhost',
@@ -16,25 +17,62 @@ connection.connect()
 
 // Router!!
 router.get('/', function(req, res) {
-  console.log('get join url')
-  res.render('join.ejs')
+  let msg
+  console.log(req.flash('error'))
+  let errMsg = req.flash('error')
+  if (errMsg) msg = errMsg
+  res.render('join.ejs', { message: msg })
 })
 
-router.post('/', function(req, res) {
-  const body = req.body
-  const email = body.email
-  const name = body.name
-  const password = body.password
-  const sql = { email, name, password }
-  const query = connection.query(`insert into testtable set ?`, sql, function(
-    err,
-    rows
-  ) {
-    if (err) {
-      throw err
-    }
-    res.render('welcome.ejs', { name: name, id: rows.insertId })
-  })
+passport.serializeUser(function(user, done) {
+  done(null, user.id)
 })
+
+passport.deserializeUser(function(id, done) {
+  done(null, id)
+})
+passport.use(
+  'local-join',
+  new LocalStrategy(
+    {
+      usernameField: 'email',
+      passwordField: 'password',
+      passReqToCallback: true
+    },
+    function(req, email, password, done) {
+      console.log('local-join!')
+      const query = connection.query(
+        `select * from testtable where email = "${email}"`,
+        function(err, rows) {
+          if (err) return done(err)
+          if (rows.length) {
+            console.log('existed user')
+            return done(null, false, { message: 'your email is alredy used!' })
+          } else {
+            console.log(rows)
+            const sql = { password: password, email: email }
+            const query = connection.query(
+              'insert into testtable set ?',
+              sql,
+              function(err, rows) {
+                if (err) throw err
+                return done(null, { email: email, id: rows.insertId })
+              }
+            )
+          }
+        }
+      )
+    }
+  )
+)
+
+router.post(
+  '/',
+  passport.authenticate('local-join', {
+    successRedirect: '/main',
+    failureRedirect: '/join',
+    failureFlash: true
+  })
+)
 
 module.exports = router
